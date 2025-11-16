@@ -1,0 +1,278 @@
+/* Basic Reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #ffffff; 
+    color: #333;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent body scrolling */
+}
+
+/* Home Screen Layout */
+#home-screen {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    
+    height: 100vh;
+    overflow-y: auto; /* Allow this container to scroll */
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #000;
+    font-style: italic; 
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #444;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-top: 30px;
+}
+
+/* Dropdowns */
+.dropdown-container {
+    margin: 15px 0;
+}
+select {
+    width: 80%; /* Narrower UI */
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* "or" divider */
+.or-divider {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #555;
+    margin: 10px 0;
+}
+
+/* Go Button */
+#go-button {
+    width: 80%; /* Narrower UI */
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background-color: #007aff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#go-button:hover {
+    background-color: #005bb5;
+}
+
+/* Optional Settings */
+.optional-title {
+    font-size: 1.2rem; 
+    font-weight: bold; 
+    color: #333; 
+    margin-top: 30px;
+}
+
+/* --- UPDATED: Styles for new HTML Sliders --- */
+.setting-container {
+    width: 80%;
+    margin: 20px auto 0 auto; /* Top margin */
+    text-align: left;
+}
+
+.setting-container label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #444;
+}
+.setting-container label span {
+    display: inline-block;
+    width: 2.5em;
+    padding: 2px 4px;
+    background-color: #eee;
+    border-radius: 4px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.setting-container input[type="range"] {
+    width: 100%;
+    margin-top: 10px;
+}
+/* --- End of new styles --- */
+
+
+/* UPDATED: Toggle container margin */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0 10px 0; /* Adjusted margin */
+    font-size: 1rem;
+}
+.toggle-container span {
+    margin-left: 12px;
+}
+
+/* Toggle Switch CSS */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: #007aff;
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Footer */
+footer {
+    margin-top: 40px;
+    padding-bottom: 20px; 
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* ---------------------------------- */
+/* Video Player Screen           */
+/* ---------------------------------- */
+
+#video-screen {
+    width: 100%;
+    height: 100%;
+    display: none; 
+    background: #000;
+}
+
+/* Back Button (Exit video) */
+#back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 2001; /* On top of loader */
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    line-height: 44px;
+    text-align: center;
+    padding: 0;
+}
+#back-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Unmute Button */
+#unmute-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2001; /* On top of loader */
+    font-size: 1.5rem;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    line-height: 44px;
+    text-align: center;
+    padding: 0;
+}
+#unmute-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Loading Spinner CSS */
+#loader {
+    position: fixed;
+    z-index: 2000;
+    left: 50%;
+    top: 50%;
+    width: 60px;
+    height: 60px;
+    margin: -30px 0 0 -30px; 
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #007aff;
+    animation: spin 1s linear infinite;
+    display: none; 
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* "Tap to Play" Button CSS */
+#play-button {
+    position: fixed;
+    z-index: 2001; /* On top of loader */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    font-size: 3rem;
+    line-height: 80px;
+    padding: 0 0 0 5px; /* Nudge play icon to center */
+    cursor: pointer;
+    display: none; /* Hidden by default */
+}
+#play-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
