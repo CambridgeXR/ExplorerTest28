@@ -1,218 +1,298 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1220" />
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VR Explorer</title>
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
 
-  <title>VR Explorer</title>
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="data:," />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VR Explorer">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <style>
-    html,body{height:100%;margin:0;background:#071026;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    @media (orientation:portrait){
-      .landscape-warning{display:flex}
-    }
-
-    .app{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:18px;box-sizing:border-box}
-    h1{font-size:clamp(28px,6vw,48px);margin:8px 0}
-    h2{font-size:18px;margin:6px 0 16px 0;color:#cbe7ff}
-
-    .controls{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-    select{padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#fff;font-size:15px}
-
-    .footer{margin-top:auto;font-size:12px;font-style:italic;opacity:0.8;padding-bottom:6px}
-
-    .start-btn{margin-top:8px;padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,#2b8bd6,#0066cc);color:white;font-weight:600}
-
-    .player-wrap{position:fixed;inset:0;display:none;background:black;z-index:60;align-items:center;justify-content:center}
-    .player-toolbar{position:absolute;top:10px;left:10px;z-index:120}
-    .player-toolbar button{padding:8px 12px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:#fff}
-
-    .cardboard{display:flex;width:100%;height:100%;overflow:hidden}
-    .cardboard iframe{flex:1;border:0;height:100%;width:50vw}
-
-    .mono iframe{width:100%;height:100%}
-
-    .landscape-warning{position:fixed;inset:0;background:#071026;z-index:9999;display:none;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px}
-  </style>
 </head>
 <body>
-  <div class="landscape-warning" id="landWarn">
-    <div>
-      <h1>Please rotate your device</h1>
-      <p>VR Explorer works best in landscape orientation.</p>
+
+    <div id="home-screen">
+        <h1><i>VR Explorer</i></h1>
+        
+        <h2>Step 1: Select Simulation</h2>
+        <div class="dropdown-container">
+            <select id="dropdown-audiences">
+                <option value="">Presentation Audiences...</option>
+            </select>
+        </div>
+        
+        <p class="or-divider">or</p>
+
+        <div class="dropdown-container">
+            <select id="dropdown-scenarios">
+                <option value="">Special Scenarios...</option>
+            </select>
+        </div>
+
+        <h2>Step 2: Enter Simulation</h2>
+        <button id="go-button">Go</button>
+
+        <h3 class="optional-title">Optional Settings</h3>
+
+        <div class="setting-container">
+            <label for="ipd-slider" id="ipd-label">IPD Adjustment: <span>64</span> mm</label>
+            <input type="range" id="ipd-slider" min="55" max="75" value="64" step="0.5">
+        </div>
+        
+        <div class="setting-container">
+            <label for="zoom-slider" id="zoom-label">Zoom (Field of View): <span>80</span>°</label>
+            <input type="range" id="zoom-slider" min="60" max="100" value="80" step="1">
+        </div>
+        
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="safe-mode">
+                <span class="slider"></span>
+            </label>
+            <span>Safe Mode</span>
+        </div>
+
+        <footer>
+            <i>VR Explorer 1.1 brought to you by Cambridge VR</i>
+        </footer>
     </div>
-  </div>
 
-  <main class="app" id="app">
-    <h1>VR Explorer</h1>
-    <h2>Select Simulation</h2>
+    <div id="video-screen">
+        
+        <a-scene id="vr-scene" vr-mode-ui="enabled: true; cardboardModeEnabled: true">
+            <a-assets>
+                <video id="video-src" loop playsinline muted crossorigin="anonymous"></video>
+            </a-assets>
+            
+            <a-videosphere id="video-sphere" src="#video-src"></a-videosphere>
 
-    <div class="controls" aria-hidden="false">
-      <div>
-        <label for="audience">Audience Sizes</label><br>
-        <select id="audience"></select>
-      </div>
-      <div>
-        <label for="scenarios">Special Scenarios</label><br>
-        <select id="scenarios"></select>
-      </div>
-      <div>
-        <button id="openBtn" class="start-btn">Open in Cardboard VR</button>
-      </div>
+            <a-entity id="camera-rig" position="0 0 0">
+                <a-camera id="camera" fov="80">
+                </a-camera>
+            </a-entity>
+        </a-scene>
+
+        <div id="loader"></div>
+        
+        <button id="play-button">▶</button>
+
+        <button id="back-button">✖</button>
+        <button id="unmute-button"></button>
     </div>
 
-    <div class="footer">VR Explorer 1.1 brought to you by Cambridge VR</div>
-  </main>
 
-  <div class="player-wrap" id="playerWrap">
-    <div class="player-toolbar">
-      <button id="exitBtn">Exit VR</button>
-    </div>
-    <div id="playerArea" class="cardboard" aria-live="polite"></div>
-  </div>
+    <script src="video-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Get UI Elements ---
+            const homeScreen = document.getElementById('home-screen');
+            const videoScreen = document.getElementById('video-screen');
+            const goButton = document.getElementById('go-button');
+            const backButton = document.getElementById('back-button');
+            const unmuteButton = document.getElementById('unmute-button');
+            const loader = document.getElementById('loader');
+            const playButton = document.getElementById('play-button');
+            
+            const dropdownAudiences = document.getElementById('dropdown-audiences');
+            const dropdownScenarios = document.getElementById('dropdown-scenarios');
+            
+            const safeMode = document.getElementById('safe-mode');
+            const ipdSlider = document.getElementById('ipd-slider');
+            const ipdLabel = document.querySelector('#ipd-label span');
+            const zoomSlider = document.getElementById('zoom-slider');
+            const zoomLabel = document.querySelector('#zoom-label span');
+            
+            const vrScene = document.getElementById('vr-scene');
+            const videoAsset = document.getElementById('video-src');
+            const videoSphere = document.getElementById('video-sphere');
+            const camera = document.getElementById('camera');
 
-  <script>
-    const VIDEOS = {
-      "Audience Sizes": [
-        { id: 'N0-CF', title: 'Audience of 0', url: 'https://player.virtualrealitypublicspeaking.com/?video=N0-CF' },
-        { id: 'N1-CF', title: 'Audience of 1', url: 'https://player.virtualrealitypublicspeaking.com/?video=N1-CF' },
-        { id: 'N2-CF', title: 'Audience of 2', url: 'https://player.virtualrealitypublicspeaking.com/?video=N2-CF' },
-        { id: 'N4-CF', title: 'Audience of 4', url: 'https://player.virtualrealitypublicspeaking.com/?video=N4-CF' },
-        { id: 'N9-CF', title: 'Audience of 9', url: 'https://player.virtualrealitypublicspeaking.com/?video=N9-CF' },
-        { id: 'N16-CF', title: 'Audience of 16', url: 'https://player.virtualrealitypublicspeaking.com/?video=N16-CF' },
-        { id: 'N25-CF', title: 'Audience of 25', url: 'https://player.virtualrealitypublicspeaking.com/?video=N25-CF' },
-        { id: 'N50-CF', title: 'Audience of 50', url: 'https://player.virtualrealitypublicspeaking.com/?video=N50-CF' },
-        { id: 'N100-CF', title: 'Audience of 100', url: 'https://player.virtualrealitypublicspeaking.com/?video=N100-CF' },
-        { id: 'N500-CF', title: 'Audience of 500', url: 'https://player.virtualrealitypublicspeaking.com/?video=N500-CF' },
-        { id: 'N10K-CF', title: 'Audience of 1000s', url: 'https://player.virtualrealitypublicspeaking.com/?video=N10K-CF' }
-      ],
-      "Special Scenarios": [
-        { id: 'ACC01-CF', title: 'TV teleprompter', url: 'https://player.virtualrealitypublicspeaking.com/?video=ACC01-CF' },
-        { id: 'JIC01-CF', title: 'Job interview', url: 'https://player.virtualrealitypublicspeaking.com/?video=JIC01-CF' },
-        { id: 'RIC01-CF', title: 'Radio interview', url: 'https://player.virtualrealitypublicspeaking.com/?video=RIC01-CF' }
-      ]
-    };
+            // --- Populate Dropdowns ---
+            Object.keys(audienceVideos).forEach(key => dropdownAudiences.add(new Option(key, key)));
+            Object.keys(scenarioVideos).forEach(key => dropdownScenarios.add(new Option(key, key)));
 
-    const audienceSel = document.getElementById('audience');
-    const scenariosSel = document.getElementById('scenarios');
+            // --- Dropdown Logic ---
+            dropdownAudiences.addEventListener('change', () => { if (dropdownAudiences.value) dropdownScenarios.value = ''; });
+            dropdownScenarios.addEventListener('change', () => { if (dropdownScenarios.value) dropdownAudiences.value = ''; });
 
-    VIDEOS['Audience Sizes'].forEach(v=>{
-      const o = document.createElement('option'); 
-      o.value = v.url; 
-      o.textContent = v.title; 
-      audienceSel.appendChild(o);
-    });
+            // --- Slider Label Updates ---
+            ipdSlider.addEventListener('input', () => {
+                ipdLabel.textContent = ipdSlider.value;
+            });
+            zoomSlider.addEventListener('input', () => {
+                zoomLabel.textContent = zoomSlider.value;
+            });
+            
+            
+            // --- Core Video Listeners ---
+            
+            const videoLoadedHandler = () => {
+                loader.style.display = 'none';
+                playButton.style.display = 'block';
+                console.log('A-Frame material loaded, ready to play.');
+            };
 
-    VIDEOS['Special Scenarios'].forEach(v=>{
-      const o = document.createElement('option'); 
-      o.value = v.url; 
-      o.textContent = v.title; 
-      scenariosSel.appendChild(o);
-    });
+            const videoErrorHandler = (e) => {
+                console.error("Video Error:", e);
+                videoAsset.removeEventListener('error', videoErrorHandler);
+                backButton.click();
+                alert("Error: The video file could not be loaded. This may be a server (CORS) or network issue. Please try again.");
+            };
+            
 
-    function getSelectedURL(){
-      return audienceSel.value || scenariosSel.value;
-    }
+            // --- iOS Motion Permission Function ---
+            function requestMotionPermission() {
+                // This is the function for iOS 13+
+                if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                    DeviceMotionEvent.requestPermission()
+                        .then(permissionState => {
+                            if (permissionState === 'granted') {
+                                console.log('Motion permission granted.');
+                                loadVideo(); // Permission granted, load the video
+                            } else {
+                                alert('Motion permission is required for VR mode. Please refresh and try again.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Motion permission request error:', error);
+                            loadVideo(); 
+                        });
+                } else {
+                    // This is not an iOS 13+ device (e.g., Android, Desktop)
+                    console.log('Motion permission not required.');
+                    loadVideo();
+                }
+            }
 
-    const playerWrap = document.getElementById('playerWrap');
-    const playerArea = document.getElementById('playerArea');
-    const openBtn = document.getElementById('openBtn');
-    const exitBtn = document.getElementById('exitBtn');
-    let currentURL = null;
+            // --- "Go" Button Logic ---
+            goButton.addEventListener('click', () => {
+                // We must request permission *before* loading the video
+                requestMotionPermission();
+            });
 
-    openBtn.addEventListener('click', ()=>{
-      const url = getSelectedURL();
-      if(!url){alert('Please select a simulation.');return}
-      currentURL = url;
-      openCardboard(url);
-    });
+            // --- Main Video Loading Function ---
+            function loadVideo() {
+                const selectedKey = dropdownAudiences.value || dropdownScenarios.value;
+                if (!selectedKey) { alert('Please select a simulation.'); return; }
+                const videoInfo = audienceVideos[selectedKey] || scenarioVideos[selectedKey];
+                if (!videoInfo) { alert('Could not find video data.'); return; }
 
-    exitBtn.addEventListener('click', ()=>{ closeCardboard(); });
+                if (safeMode.checked) {
+                    window.location.href = videoInfo.youtube;
+                    return;
+                }
+                
+                homeScreen.style.display = 'none';
+                videoScreen.style.display = 'block';
+                unmuteButton.innerHTML = '🔇';
+                loader.style.display = 'block';
+                playButton.style.display = 'none';
+                
+                videoSphere.addEventListener('materialvideoloadeddata', videoLoadedHandler, { once: true });
+                videoAsset.addEventListener('error', videoErrorHandler, { once: true });
 
-    function openCardboard(url){
-      playerArea.className = 'cardboard';
-      playerArea.innerHTML = '';
+                videoAsset.muted = true; 
 
-      const left = document.createElement('iframe');
-      const right = document.createElement('iframe');
+                // --- Apply FOV (Zoom) from HTML slider ---
+                const fovValue = parseFloat(zoomSlider.value);
+                camera.setAttribute('camera', 'fov', fovValue);
 
-      [left,right].forEach(f => {
-        f.setAttribute('allow','autoplay; fullscreen; accelerometer; gyroscope; xr-spatial-tracking');
-        f.src = url;
-      });
+                // --- Apply IPD from HTML slider ---
+                const ipdInMeters = parseFloat(ipdSlider.value) / 1000;
+                const halfIpd = ipdInMeters / 2;
+                camera.setAttribute('camera', 'userHeight', 0); // Start at origin
+                
+                // This listener runs *after* user clicks the "Enter VR" button
+                vrScene.addEventListener('enter-vr', function setEyePositions() {
+                    vrScene.removeEventListener('enter-vr', setEyePositions); // Run only once
+                    
+                    if (camera.el && camera.el.children.length >= 2) {
+                        const leftEye = camera.el.children[0];
+                        const rightEye = camera.el.children[1];
+                        
+                        leftEye.setAttribute('position', { x: -halfIpd, y: 0, z: 0 });
+                        rightEye.setAttribute('position', { x: halfIpd, y: 0, z: 0 });
+                        console.log('IPD set to ' + ipdInMeters);
+                    }
+                });
+                
+                videoAsset.setAttribute('src', videoInfo.cloudflare);
+                
+                if (vrScene.hasLoaded) vrScene.play();
+                else vrScene.addEventListener('loaded', () => vrScene.play());
 
-      playerArea.appendChild(left);
-      playerArea.appendChild(right);
+                // --- UPDATED: This is the robust fix for the iOS VR button ---
+                if (AFRAME.utils.device.isDesktop) {
+                    // This is a laptop/PC
+                    vrScene.setAttribute('vr-mode-ui', 'enabled', false);
+                    document.documentElement.requestFullscreen().catch(e => console.warn('Fullscreen request failed:', e));
+                }
+                // --- No 'else' block ---
+                // This lets the HTML (cardboardModeEnabled: true) do its job
+                // on all non-desktop devices (iPhones, iPads, Androids).
+            }
 
-      playerWrap.style.display = 'flex';
+            // --- "Tap to Play" Button Logic ---
+            playButton.addEventListener('click', () => {
+                videoAsset.play();
+                playButton.style.display = 'none';
+            });
 
-      if(playerWrap.requestFullscreen){
-        playerWrap.requestFullscreen().catch(()=>{});
-      }
+            // --- "Back" Button Logic ---
+            backButton.addEventListener('click', () => {
+                videoScreen.style.display = 'none';
+                homeScreen.style.display = 'block';
+                loader.style.display = 'none';
+                playButton.style.display = 'none';
+                
+                videoSphere.removeEventListener('materialvideoloadeddata', videoLoadedHandler);
+                videoAsset.removeEventListener('error', videoErrorHandler);
+                
+                videoAsset.pause();
+                videoAsset.setAttribute('src', ''); 
+                
+                vrScene.pause();
+                videoAsset.muted = true;
+                
+                // Reset camera properties
+                camera.setAttribute('camera', 'userHeight', 1.6); // A-Frame's default
+                camera.setAttribute('camera', 'fov', 80); // Reset FOV
+                
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            });
 
-      updateLandscapeWarning();
-    }
-
-    function closeCardboard(){
-      if(document.fullscreenElement){
-        document.exitFullscreen().catch(()=>{});
-      }
-      playerWrap.style.display = 'none';
-      playerArea.innerHTML = '';
-      currentURL = null;
-      window.scrollTo(0,0);
-    }
-
-    const landWarn = document.getElementById('landWarn');
-
-    function updateLandscapeWarning(){
-      if(window.matchMedia('(orientation:portrait)').matches){
-        landWarn.style.display = 'flex';
-      } else {
-        landWarn.style.display = 'none';
-      }
-    }
-
-    window.addEventListener('orientationchange', updateLandscapeWarning);
-    updateLandscapeWarning();
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e)=>{
-      e.preventDefault();
-      deferredPrompt = e;
-      showInstallCTA();
-    });
-
-    function showInstallCTA(){
-      if(!deferredPrompt) return;
-      const btn = document.createElement('button');
-      btn.textContent = 'Install App';
-      btn.className='start-btn';
-      btn.style.marginLeft='12px';
-      btn.addEventListener('click', async ()=>{
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        btn.remove();
-      });
-      document.querySelector('.controls').appendChild(btn);
-    }
-
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js').catch(()=>{});
-    }
-
-    if(screen.orientation && screen.orientation.lock){
-      screen.orientation.lock('landscape').catch(()=>{});
-    }
-
-    window.addEventListener('keydown', (ev)=>{ if(ev.key==='Escape') closeCardboard(); });
-  </script>
+            // --- Unmute Button Logic ---
+            unmuteButton.addEventListener('click', () => {
+                // Corrected icon logic
+                if (videoAsset.muted) {
+                    videoAsset.muted = false;
+                    unmuteButton.innerHTML = '🔈'; // Status: Audio is On
+                } else {
+                    videoAsset.muted = true;
+                    unmuteButton.innerHTML = '🔇'; // Status: Audio is Off
+                }
+            });
+            
+            // --- PWA Service Worker Registration ---
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    // UPDATED: Path changed to /ExplorerTest28/
+                    navigator.serviceWorker.register('/ExplorerTest28/sw.js')
+                        .then(reg => console.log('Service Worker registered.', reg))
+                        .catch(err => console.error('Service Worker registration failed:', err));
+                });
+            }
+        });
+    </script>
 </body>
 </html>
